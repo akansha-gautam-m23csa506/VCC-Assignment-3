@@ -10,8 +10,8 @@ services:
     restart: always
     container_name: nginx_proxy
     depends_on:
-      - frontend
-      - flask
+      - react_frontend
+      - flask_app
     networks:
       - shared_network
 
