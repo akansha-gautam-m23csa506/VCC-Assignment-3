@@ -10,7 +10,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://flask_app:5000",
+        target: "http://nginx_proxy",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

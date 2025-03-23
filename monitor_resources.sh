@@ -5,7 +5,6 @@ CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk
 echo "CPU Usage: $CPU_USAGE%"
 
 # Function to point Nginx back to local containers
-# Function to point Nginx back to local containers
 function point_to_local() {
     echo "Switching Nginx back to local containers..."
 
