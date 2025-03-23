@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  flask:
+    build: .
+    ports:
+      - "5000:5000"
+    restart: always
+    container_name: flask_app
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true

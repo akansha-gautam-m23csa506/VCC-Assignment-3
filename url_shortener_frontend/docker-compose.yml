@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "5173:80"
+    restart: always
+    container_name: react_frontend
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true
