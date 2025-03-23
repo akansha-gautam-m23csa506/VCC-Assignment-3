@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Set base directory and repo details
-BASE_DIR="/home/akanshagautam10101"
+# Dynamically set base directory
+BASE_DIR="$HOME"
 PROJECT_DIR="$BASE_DIR/VCC-Assignment-3"
 REPO_URL="https://github.com/akansha-gautam-m23csa506/VCC-Assignment-3.git"
 

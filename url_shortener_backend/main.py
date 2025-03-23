@@ -44,8 +44,12 @@ def redirect_to_url(short_url):
 
 if __name__ == '__main__':
     try:
-        with open('shortened_urls.json', 'r') as f:
-            shortened_urls = json.load(f)
-    except FileNotFoundError:
-        pass
+        if os.path.exists('shortened_urls.json') and os.path.getsize('shortened_urls.json') > 0:
+            with open('shortened_urls.json', 'r') as f:
+                shortened_urls = json.load(f)
+        else:
+            shortened_urls = {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        shortened_urls = {}
+
     app.run(host='0.0.0.0', port=5000, debug=True)
