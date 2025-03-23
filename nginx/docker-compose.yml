@@ -9,9 +9,6 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
     restart: always
     container_name: nginx_proxy
-    depends_on:
-      - react_frontend
-      - flask_app
     networks:
       - shared_network
 
