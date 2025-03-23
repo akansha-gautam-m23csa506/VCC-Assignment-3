@@ -9,8 +9,8 @@ function point_to_local() {
     echo "Switching Nginx back to local containers..."
 
     # Replace nginx.conf map block to point to local
-    sed -i '/map \$host \$frontend {/,/}/{s/default.*/default frontend:80;/}' nginx.conf
-    sed -i '/map \$host \$flask {/,/}/{s/default.*/default flask:5000;/}' nginx.conf
+    sed -i '/map \$host \$frontend {/,/}/{s/default.*/default react_frontend:80;/}' nginx.conf
+    sed -i '/map \$host \$flask {/,/}/{s/default.*/default flask_app:5000;/}' nginx.conf
 
     docker exec nginx_proxy nginx -s reload
 }
