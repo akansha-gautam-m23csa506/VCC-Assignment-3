@@ -10,7 +10,10 @@ CORS(app, resources={r"/*": {"origins": "http://34.93.82.237"}})
 
 shortened_urls = {}
 
-def generate_short_url(length=6): 
+# Set DB file path (mounted GCS path)
+DB_FILE = os.getenv('GCS_DB_PATH', '/mnt/shared_db/shortened_urls.json')
+
+def generate_short_url(length=6):
     chars = string.ascii_letters + string.digits
     short_url = ''.join(random.choice(chars) for _ in range(length))
     return short_url
@@ -27,7 +30,8 @@ def shorten_url():
         short_url = generate_short_url()
     shortened_urls[short_url] = url
 
-    with open('shortened_urls.json', 'w') as f:
+    # Write to GCS-mounted DB
+    with open(DB_FILE, 'w') as f:
         json.dump(shortened_urls, f)
 
     return jsonify({"short_url": f"{request.url_root}{short_url}", "long_url": url})
@@ -45,8 +49,9 @@ def redirect_to_url(short_url):
 
 if __name__ == '__main__':
     try:
-        if os.path.exists('shortened_urls.json') and os.path.getsize('shortened_urls.json') > 0:
-            with open('shortened_urls.json', 'r') as f:
+        # Load from GCS-mounted DB if exists
+        if os.path.exists(DB_FILE) and os.path.getsize(DB_FILE) > 0:
+            with open(DB_FILE, 'r') as f:
                 shortened_urls = json.load(f)
         else:
             shortened_urls = {}

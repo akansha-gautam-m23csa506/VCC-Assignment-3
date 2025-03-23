@@ -9,10 +9,10 @@ echo "🛑 Stopping all running containers..."
 docker stop $(docker ps -q) 2>/dev/null
 
 echo "🧹 Cleaning up Docker system..."
-sudo docker system prune -af
+docker system prune -af
 
 echo "🗑 Removing existing project folder: $PROJECT_DIR"
-sudo rm -rf "$PROJECT_DIR"
+rm -rf "$PROJECT_DIR"
 
 echo "📥 Cloning the latest repository..."
 git clone "$REPO_URL" "$PROJECT_DIR"
