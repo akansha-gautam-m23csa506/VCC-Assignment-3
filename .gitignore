@@ -82,3 +82,4 @@ yarn-error.log*
 Thumbs.db
 .DS_Store
 url_shortener_backend/shortened_urls.json
+url_shortener_backend/gcp-key.json
