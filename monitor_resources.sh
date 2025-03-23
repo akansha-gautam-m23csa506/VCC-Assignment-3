@@ -24,7 +24,7 @@ if awk "BEGIN {exit !($CPU_USAGE > 75)}"; then
         VM_NAME="scaled-vm-$(date +%s)"
         gcloud compute instances create $VM_NAME   
         --zone=asia-south1-a   
-        --source-instance-template=projects/utopian-calling-452413-n2/regions/asia-south1/instanceTemplates/vcc-instance-template-assignment-3   
+        --source-instance-template=projects/utopian-calling-452413-n2/regions/asia-south1/instanceTemplates/vcc-assignment-3-instance-template 
         --labels=assignment=3,autoscaled=true
 
         # Get external IP
@@ -46,7 +46,9 @@ elif awk "BEGIN {exit !($CPU_USAGE < 40)}"; then
     echo "CPU usage low. Considering downscale..."
 
     # Check if GCP VMs exist
-    VMS=$(gcloud compute instances list --filter="labels.assignment=3 AND labels.autoscaled=true AND status=RUNNING" --format="value(name)")
+    VMS=$(gcloud compute instances list \
+        --filter="labels.assignment=3 AND labels.autoscaled=true AND name~^autoscale-vm-" \
+        --format="value(name)")
 
     if [[ ! -z "$VMS" ]]; then
         echo "Deleting GCP VMs: $VMS"
@@ -62,8 +64,3 @@ elif awk "BEGIN {exit !($CPU_USAGE < 40)}"; then
 else
     echo "CPU usage normal. No scaling action."
 fi
-
-
-
-VM_NAME="scaled-vm-$(date +%s)"
-gcloud compute instances create $VM_NAME --zone=asia-south1 --source-instance-template=vcc-instance-template-assignment-3 --labels=assignment=3,autoscaled=true

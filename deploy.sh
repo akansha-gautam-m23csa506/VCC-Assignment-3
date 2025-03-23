@@ -2,8 +2,8 @@
 
 # Set base directory and repo details
 BASE_DIR="/home/akanshagautam10101"
-PROJECT_DIR="$BASE_DIR/VCC-Assignment2"
-REPO_URL="https://github.com/akansha-gautam-m23csa506/VCC-Assignment2.git"
+PROJECT_DIR="$BASE_DIR/VCC-Assignment-3"
+REPO_URL="https://github.com/akansha-gautam-m23csa506/VCC-Assignment-3.git"
 
 echo "🛑 Stopping all running containers..."
 docker stop $(docker ps -q) 2>/dev/null
