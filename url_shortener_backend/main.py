@@ -4,14 +4,37 @@ import string
 import json
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
+from google.cloud import storage
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://34.93.82.237"}})
 
+# Config
+GCS_BUCKET = os.getenv("GCS_BUCKET")
+DB_FILE = "shortened_urls.json"
 shortened_urls = {}
 
-# Set DB file path (mounted GCS path)
-DB_FILE = os.getenv('GCS_DB_PATH', '/mnt/shared_db/shortened_urls.json')
+# Initialize GCS client
+storage_client = storage.Client()
+bucket = storage_client.bucket(GCS_BUCKET)
+
+def download_db_file():
+    try:
+        blob = bucket.blob(DB_FILE)
+        blob.download_to_filename(DB_FILE)
+        print("Downloaded DB from GCS.")
+    except Exception as e:
+        print(f"No existing DB found, starting fresh: {e}")
+        with open(DB_FILE, 'w') as f:
+            json.dump({}, f)
+
+def upload_db_file():
+    try:
+        blob = bucket.blob(DB_FILE)
+        blob.upload_from_filename(DB_FILE)
+        print("Uploaded DB to GCS.")
+    except Exception as e:
+        print(f"Failed to upload DB: {e}")
 
 def generate_short_url(length=6):
     chars = string.ascii_letters + string.digits
@@ -30,9 +53,10 @@ def shorten_url():
         short_url = generate_short_url()
     shortened_urls[short_url] = url
 
-    # Write to GCS-mounted DB
+    # Save locally & upload to GCS
     with open(DB_FILE, 'w') as f:
         json.dump(shortened_urls, f)
+    upload_db_file()
 
     return jsonify({"short_url": f"{request.url_root}{short_url}", "long_url": url})
 
@@ -49,12 +73,10 @@ def redirect_to_url(short_url):
 
 if __name__ == '__main__':
     try:
-        # Load from GCS-mounted DB if exists
-        if os.path.exists(DB_FILE) and os.path.getsize(DB_FILE) > 0:
-            with open(DB_FILE, 'r') as f:
-                shortened_urls = json.load(f)
-        else:
-            shortened_urls = {}
+        # Download DB from GCS at startup
+        download_db_file()
+        with open(DB_FILE, 'r') as f:
+            shortened_urls = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         shortened_urls = {}
 

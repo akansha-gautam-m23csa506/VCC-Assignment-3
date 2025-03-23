@@ -1,30 +1,17 @@
+# Use official Python base image
 FROM python:3.9
-
-# Install gcsfuse dependencies
-RUN apt-get update && apt-get install -y gnupg curl lsb-release
-
-# Add GCSFUSE repo and install
-RUN export GCSFUSE_REPO=gcsfuse-$(lsb_release -c -s) && \
-    echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | tee /etc/apt/sources.list.d/gcsfuse.list && \
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    apt-get update && \
-    apt-get install -y gcsfuse
 
 # Set working directory
 WORKDIR /app
 
-# Copy project
+# Copy application code
 COPY . /app
 
-# Install Python dependencies
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Expose port
+# Expose Flask port
 EXPOSE 5000
 
-# Use entrypoint script
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Run Flask app
+CMD ["python", "main.py"]
