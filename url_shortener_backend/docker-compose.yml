@@ -8,7 +8,7 @@ services:
     restart: always
     container_name: flask_app
     volumes:
-      - ./gcp-key.json:/key.json
+      - /home/secrets/gcp-key.json:/key.json
     environment:
       - GCS_BUCKET=shortened-urls-bucket
       - GOOGLE_APPLICATION_CREDENTIALS=/key.json
