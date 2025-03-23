@@ -1,27 +1,44 @@
-# Use Node.js image to build the React app
-FROM node:18-alpine as build
+# # Use Node.js image to build the React app
+# FROM node:18-alpine as build
 
-# Set working directory inside the container
+# # Set working directory inside the container
+# WORKDIR /app
+
+# # Copy package.json and install dependencies
+# COPY package.json package-lock.json ./
+# RUN npm install
+
+# # Copy the rest of the frontend code
+# COPY . .
+
+# # Build the frontend
+# RUN npm run build
+
+# # Use Nginx to serve the static frontend files
+# FROM nginx:alpine
+
+# # Copy the built frontend from previous stage
+# COPY --from=build /app/dist /usr/share/nginx/html
+
+# # Expose port 80 for Nginx
+# EXPOSE 80
+
+# # Start Nginx server
+# CMD ["nginx", "-g", "daemon off;"]
+
+
+# frontend/Dockerfile
+
+FROM node:18 as build
+
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copy the rest of the frontend code
 COPY . .
 
-# Build the frontend
-RUN npm run build
+RUN npm install && npm run build
 
-# Use Nginx to serve the static frontend files
-FROM nginx:alpine
+# Serve build with nginx
+FROM nginx:latest
 
-# Copy the built frontend from previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
-
-# Expose port 80 for Nginx
-EXPOSE 80
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+COPY nginx.conf /etc/nginx/conf.d/default.conf
