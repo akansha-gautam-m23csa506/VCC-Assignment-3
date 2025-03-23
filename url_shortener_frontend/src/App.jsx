@@ -26,7 +26,7 @@ export default function UrlShortener() {
       }
 
       const data = await response.json();
-      setShortenedUrl(`/api/${data.short_url}`);
+      setShortenedUrl(data.short_url);
       setLongUrl("");
       fetchAllUrls();
     } catch (error) {

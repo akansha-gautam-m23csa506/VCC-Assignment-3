@@ -7,7 +7,8 @@ from flask_cors import CORS
 from google.cloud import storage
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins="*")
+# CORS(app, supports_credentials=True, origins="*")
+CORS(app, resources={r"/*": {"origins": ["*"]}})
 
 # Config
 GCS_BUCKET = os.getenv("GCS_BUCKET")
