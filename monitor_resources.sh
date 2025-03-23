@@ -5,10 +5,14 @@ CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk
 echo "CPU Usage: $CPU_USAGE%"
 
 # Function to point Nginx back to local containers
+# Function to point Nginx back to local containers
 function point_to_local() {
     echo "Switching Nginx back to local containers..."
-    echo "set \$frontend frontend:80;" > ./frontend.conf
-    echo "set \$flask flask:5000;" > ./flask.conf
+
+    # Replace nginx.conf map block to point to local
+    sed -i '/map \$host \$frontend {/,/}/{s/default.*/default frontend:80;/}' nginx.conf
+    sed -i '/map \$host \$flask {/,/}/{s/default.*/default flask:5000;/}' nginx.conf
+
     docker exec nginx_proxy nginx -s reload
 }
 
@@ -35,8 +39,9 @@ if awk "BEGIN {exit !($CPU_USAGE > 75)}"; then
         echo "New GCP VM IP: $VM_IP"
 
         # Update Nginx config
-        echo "set \$frontend $VM_IP:80;" > ./frontend.conf
-        echo "set \$flask $VM_IP:5000;" > ./flask.conf
+        # Replace nginx.conf to point to GCP VM:
+        sed -i "/map \$host \$frontend {/,/}/{s/default.*/default $VM_IP:80;/}" nginx.conf
+        sed -i "/map \$host \$flask {/,/}/{s/default.*/default $VM_IP:5000;/}" nginx.conf
         docker exec nginx_proxy nginx -s reload
         echo "Traffic redirected to GCP VM."
     else
